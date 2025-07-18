@@ -5,189 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apple Music Key Generator</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #007bff;
-            --secondary-color: #6c757d;
-            --background-color: #f4f4f4;
-            --text-color: #333;
-            --success-color: #28a745;
-            --error-color: #dc3545;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--background-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            padding: 40px;
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .container:hover {
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            transform: translateY(-5px);
-        }
-
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        .btn {
-            display: inline-block;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        #key-display {
-            background-color: #f8f9fa;
-            border: 2px dashed var(--secondary-color);
-            color: var(--text-color);
-            padding: 15px;
-            border-radius: 8px;
-            word-break: break-all;
-            font-family: monospace;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .key-success {
-            background-color: rgba(40, 167, 69, 0.1);
-            border-color: var(--success-color);
-            color: var(--success-color);
-        }
-
-        .key-error {
-            background-color: rgba(220, 53, 69, 0.1);
-            border-color: var(--error-color);
-            color: var(--error-color);
-        }
-
-        .copy-btn {
-            background-color: transparent;
-            color: var(--secondary-color);
-            border: 2px solid var(--secondary-color);
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .copy-btn:hover {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-                margin: 0 10px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Apple Music Key Generator</h1>
-        <button id="generate-btn" class="btn">Generate Key</button>
-        <div id="key-display">Generated Key Will Appear Here</div>
-        <button id="copy-btn" class="btn copy-btn" style="display: none;">Copy Key</button>
+        <div class="card">
+            <h1>Apple Music Key Generator</h1>
+            <div id="key-display" class="key-display">
+                Click Generate to get your key
+            </div>
+            <div class="button-group">
+                <button id="generate-btn" class="btn btn-primary">Generate Key</button>
+                <button id="copy-btn" class="btn btn-secondary" style="display:none;">Copy Key</button>
+            </div>
+        </div>
     </div>
 
-    <script>
-        const generateBtn = document.getElementById('generate-btn');
-        const keyDisplay = document.getElementById('key-display');
-        const copyBtn = document.getElementById('copy-btn');
-
-        generateBtn.addEventListener('click', () => {
-            // Disable button during generation
-            generateBtn.disabled = true;
-            generateBtn.textContent = 'Generating...';
-            keyDisplay.textContent = 'Generating key...';
-            keyDisplay.className = 'key-display';
-
-            fetch('/generate_key')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        keyDisplay.textContent = data.key;
-                        keyDisplay.classList.add('key-success');
-                        copyBtn.style.display = 'inline-block';
-                    } else {
-                        keyDisplay.textContent = 'Key Generation Failed';
-                        keyDisplay.classList.add('key-error');
-                        copyBtn.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    keyDisplay.textContent = 'An error occurred';
-                    keyDisplay.classList.add('key-error');
-                    copyBtn.style.display = 'none';
-                })
-                .finally(() => {
-                    // Re-enable button
-                    generateBtn.disabled = false;
-                    generateBtn.textContent = 'Generate Key';
-                });
-        });
-
-        copyBtn.addEventListener('click', () => {
-            const key = keyDisplay.textContent;
-            navigator.clipboard.writeText(key).then(() => {
-                copyBtn.textContent = 'Copied!';
-                copyBtn.style.backgroundColor = 'var(--success-color)';
-                copyBtn.style.color = 'white';
-                
-                setTimeout(() => {
-                    copyBtn.textContent = 'Copy Key';
-                    copyBtn.style.backgroundColor = 'transparent';
-                    copyBtn.style.color = 'var(--secondary-color)';
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html> 
